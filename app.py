@@ -37,15 +37,16 @@ def main():
 
     # Calculate the Homography matrix for Perspective Transformation
     homography, distance_threshold = projection.get_homography(
-        FLAGS.input_video_path, FLAGS.scaling_factor)
+        FLAGS.input_video_path, 0.5)
 
     # Create Video Capture and Writer objects
     video_capture = cv2.VideoCapture(FLAGS.input_video_path)
     video_writer = cv2.VideoWriter(
         FLAGS.output_video_path,
         cv2.VideoWriter_fourcc(*'MP4V'),
-        video_capture.get(cv2.CAP_PROP_FPS), 
-        (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+        video_capture.get(cv2.CAP_PROP_FPS),
+        (1200, 600))
+        # (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
     start_time = time.time()
     frame_count = 1
@@ -91,7 +92,7 @@ def main():
 
     total_time = time.time() - start_time
     time_per_frame = round((total_time / frame_count) * 1000, 2)
-    print(f'Average Latency per frame: {time_per_frame} ms')
+    print(f'\nAverage Latency per frame: {time_per_frame} ms')
 
     video_capture.release()
     video_writer.release()

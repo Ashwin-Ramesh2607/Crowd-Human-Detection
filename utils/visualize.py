@@ -1,7 +1,16 @@
 import cv2
+from PIL import Image, ImageFont, ImageDraw
 
 
 def draw_status(original_image, bird_view_image, person_data, person_status):
+
+    # Make into PIL Image
+    bird_view_image = Image.fromarray(bird_view_image)
+
+    # Get a drawing context
+    draw = ImageDraw.Draw(im_p)
+    font = ImageFont.truetype("Arial Unicode.ttf", 32)
+    tick = str(emoji.emojize(':heavy_check_mark:'))
 
     for idx, coords in person_data:
 
@@ -10,11 +19,13 @@ def draw_status(original_image, bird_view_image, person_data, person_status):
         else:
             color = (0, 255, 0)  # Green
 
+        draw.text((int(coords['feet_point'][0]), int(coords['feet_point'][1])), tick, (255,255,255), font=font)
+
         # Visualization on Bird View Image
-        cv2.circle(
-            bird_view_image,
-            (int(coords['feet_point'][0]), int(coords['feet_point'][1])),
-            5, color, -1)
+        # cv2.circle(
+        #     bird_view_image,
+        #     (int(coords['feet_point'][0]), int(coords['feet_point'][1])),
+        #     5, color, -1)
 
         # Visualization on Video Feed
         cv2.rectangle(

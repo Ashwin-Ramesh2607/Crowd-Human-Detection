@@ -22,8 +22,11 @@ def main():
     # test a single image
     img = cv2.imread(img)
     result = inference_detector(model, img)[0]
+    result = result.astype(np.int16)
     # show the results
-    show_result_pyplot(model, args.img, result, score_thr=args.score_thr)
+    for box in result:
+        cv2.rectangle(img, (box[0], box[1]), (box[2], box[3]), (0, 255, 255), 2)
+    cv2.write('test.jpg', img)
 
 
 if __name__ == '__main__':

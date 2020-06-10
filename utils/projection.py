@@ -46,12 +46,14 @@ def get_homography(input_video_path, scaling_factor):
     video_capture.release()
 
     # Launch the GUI and project the frame onto bird's eye view plane
-    points = gui.interactive_gui(frame)
+    #points = gui.interactive_gui(frame)
+    points = []
     homography = estimate_homography(frame, points)
 
     # Get distance threshold from GUI
-    distance_threshold, tdp1, tdp2 = get_distance_parameters(points, homography)
-    
+    #distance_threshold, tdp1, tdp2 = get_distance_parameters(points, homography)
+    distance_threshold = 0
+
     return homography, distance_threshold
 
 

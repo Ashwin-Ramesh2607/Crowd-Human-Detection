@@ -11,10 +11,16 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='Social Distancing AI')
 
     parser.add_argument(
-        '--image_path',
+        '--input_video_path',
         type=str,
         default='',
-        help='Path to the demo image file')
+        help='Path to the input video file')
+
+    parser.add_argument(
+        '--output_video_path',
+        type=str,
+        default='output.mp4',
+        help='Path to the output video file')
 
     parser.add_argument(
         '--config_path',
@@ -45,19 +51,40 @@ def parse_arguments():
 
 def main():
 
-    # build the model from a config file and a checkpoint file
+    # Build the model from a config and model file
     model = init_detector(FLAGS.config_path, FLAGS.model_path, device=FLAGS.device)
 
-    # test a single image
-    image = cv2.imread(FLAGS.image_path)
-    result = inference_detector(model, image)[0]
+    # Create Video Capture and Writer objects
+    video_capture = cv2.VideoCapture(FLAGS.input_video_path)
+    video_writer = cv2.VideoWriter(
+        FLAGS.output_video_path,
+        cv2.VideoWriter_fourcc(*'MP4V'),
+        video_capture.get(cv2.CAP_PROP_FPS), 
+        (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
-    # show the results
-    for box in result:
-        if box[4] >= FLAGS.score_thresh:
-            cv2.rectangle(image, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 0), 1)
+    frame_count = 1
 
-    cv2.imwrite('test.jpg', image)
+    while True:
+
+        ret, frame = video_capture.read()
+        if not ret:
+            break
+
+        result = inference_detector(model, frame)[0]
+
+        # Visualize the bounding boxes
+        for box in result:
+            if box[4] >= FLAGS.score_thresh:
+                cv2.rectangle(frame, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), (0, 255, 255), 1)
+
+        video_writer.write(frame)
+
+        logs = 'Frames processed: ' + str(frame_count)
+        print('\r' + logs, end='')
+        frame_count += 1
+
+    video_capture.release()
+    video_writer.release()
 
 
 if __name__ == '__main__':

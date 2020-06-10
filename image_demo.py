@@ -20,7 +20,7 @@ def main():
     model = init_detector(args.config, args.checkpoint, device=args.device)
 
     # test a single image
-    img = cv2.imread(img)
+    img = cv2.imread(args.img)
     result = inference_detector(model, img)[0]
     result = result.astype(np.int16)
     # show the results

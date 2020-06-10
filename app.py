@@ -1,3 +1,4 @@
+import time
 import argparse
 
 import cv2
@@ -62,6 +63,7 @@ def main():
         video_capture.get(cv2.CAP_PROP_FPS), 
         (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
+    start_time = time.time()
     frame_count = 1
 
     while True:
@@ -82,6 +84,10 @@ def main():
         logs = 'Frames processed: ' + str(frame_count)
         print('\r' + logs, end='')
         frame_count += 1
+
+    total_time = time.time() - start_time
+    time_per_frame = round((total_time / frame_count) * 1000, 2)
+    print(f'Average Latency per frame: {time_per_frame} ms')
 
     video_capture.release()
     video_writer.release()

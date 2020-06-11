@@ -99,5 +99,5 @@ def main():
 
 
 if __name__ == '__main__':
-    FLAGS = parse_arguments()
+    FLAGS = get_params.parse_arguments()
     main()

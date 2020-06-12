@@ -40,13 +40,13 @@ def main():
         FLAGS.input_video_path, 1.0)
 
     # Create Video Capture and Writer objects
+    video_dim = (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH) / 2), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2))
     video_capture = cv2.VideoCapture(FLAGS.input_video_path)
     video_writer = cv2.VideoWriter(
         FLAGS.output_video_path,
         cv2.VideoWriter_fourcc(*'VP90'),
         video_capture.get(cv2.CAP_PROP_FPS),
-        (1200, 600))
-        # (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+        (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))
 
     start_time = time.time()
     frame_count = 1
@@ -78,13 +78,19 @@ def main():
             person_status,
             person_connections)
 
-        bird_view_image = cv2.resize(bird_view_image, (600, 600))
-        #frame = cv2.resize(frame, (600, 600))
+        bird_view_image = cv2.resize(bird_view_image, video_dim)
+        frame = cv2.resize(frame, video_dim)
 
-        #output_frame = np.concatenate((bird_view_image, frame), axis=1)
-        #output_frame = np.uint8(output_frame)
+        top_frame = np.concatenate((bird_view_image, frame), axis=1)
+        top_frame = np.uint8(top_frame)
 
-        video_writer.write(frame)
+        bottom_frame = np.concatenate((frame, bird_view_image), axis=1)
+        bottom_frame = np.uint8(bottom_frame)
+
+        output_frame = np.concatenate((top_frame, bottom_frame), axis=0)
+        output_frame = np.uint8(output_frame)
+
+        video_writer.write(output_frame)
 
         logs = 'Frames processed: ' + str(frame_count)
         print('\r' + logs, end='')

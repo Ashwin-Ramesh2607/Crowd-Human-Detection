@@ -6,16 +6,16 @@ from . import gui
 
 def estimate_homography(original_image, original_points, save_warped_frame=True):
 
-    original_points = np.array([[[145, 376]],
-                                [[468, 439]],
-                                [[697, 203]],
-                                [[477, 160]]])
+    original_points = np.array([[[272, 755]],
+                                [[872, 952]],
+                                [[1454, 341]],
+                                [[1049, 258]]])
 
     x_distance = np.linalg.norm(original_points[0][0] - original_points[1][0]) / original_image.shape[1]
     y_distance = np.linalg.norm(original_points[1][0] - original_points[2][0]) / original_image.shape[0]
 
-    XY1 = 650
-    XY2 = 850
+    XY1 = original_image.shape[0] / 2
+    XY2 = original_image.shape[1] / 2
 
     xmin = int(XY1 * x_distance)
     ymin = int(XY1 * y_distance)

@@ -37,7 +37,7 @@ def main():
 
     # Calculate the Homography matrix for Perspective Transformation
     homography, distance_threshold = projection.get_homography(
-        FLAGS.input_video_path, 0.5)
+        FLAGS.input_video_path, 1.0)
 
     # Create Video Capture and Writer objects
     video_capture = cv2.VideoCapture(FLAGS.input_video_path)
@@ -57,7 +57,7 @@ def main():
         if not ret:
             break
 
-        frame = cv2.resize(frame, dsize=(0, 0), fx=0.5, fy=0.5)
+        frame = cv2.resize(frame, dsize=(0, 0), fx=1.0, fy=1.0)
         result = inference_detector(model, frame)[0]
 
         # Filter the detections with a low confidence threshold
@@ -79,12 +79,12 @@ def main():
             person_connections)
 
         bird_view_image = cv2.resize(bird_view_image, (600, 600))
-        frame = cv2.resize(frame, (600, 600))
+        #frame = cv2.resize(frame, (600, 600))
 
-        output_frame = np.concatenate((bird_view_image, frame), axis=1)
-        output_frame = np.uint8(output_frame)
+        #output_frame = np.concatenate((bird_view_image, frame), axis=1)
+        #output_frame = np.uint8(output_frame)
 
-        video_writer.write(output_frame)
+        video_writer.write(frame)
 
         logs = 'Frames processed: ' + str(frame_count)
         print('\r' + logs, end='')

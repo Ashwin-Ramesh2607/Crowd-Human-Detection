@@ -51,4 +51,3 @@ def show_violations(original_image, bird_view_image, person_data, person_status,
     bird_view_image = draw_connections(bird_view_image, dict(person_data), track_connections)
 
     return original_image, bird_view_image
-

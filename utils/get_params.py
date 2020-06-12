@@ -20,7 +20,7 @@ def parse_arguments():
     parser.add_argument(
         '--config_path',
         type=str,
-        default='configs/iterdet/crowd_human_full_faster_rcnn_r50_fpn_2x.py',
+        default='models/configs/crowd_human_full_faster_rcnn_r50_fpn_2x.py',
         help='Path to the config file for the required model')
 
     parser.add_argument(

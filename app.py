@@ -1,3 +1,4 @@
+import copy
 import time
 import argparse
 
@@ -40,14 +41,16 @@ def main():
         FLAGS.input_video_path, 1.0)
 
     # Create Video Capture and Writer objects
-    video_dim = (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH) / 2), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2))
     video_capture = cv2.VideoCapture(FLAGS.input_video_path)
     video_writer = cv2.VideoWriter(
         FLAGS.output_video_path,
         cv2.VideoWriter_fourcc(*'VP90'),
         video_capture.get(cv2.CAP_PROP_FPS),
-        (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+        (960 + 540, 1080))
 
+    # Initialize the Background subtractor for Motion Heatmap generation
+    background_subtractor = cv2.createBackgroundSubtractorMOG2()
+    video_dim = (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH) / 2), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT) / 2))
     start_time = time.time()
     frame_count = 1
 
@@ -57,7 +60,6 @@ def main():
         if not ret:
             break
 
-        frame = cv2.resize(frame, dsize=(0, 0), fx=1.0, fy=1.0)
         result = inference_detector(model, frame)[0]
 
         # Filter the detections with a low confidence threshold
@@ -70,7 +72,24 @@ def main():
         person_data = prepare_person_data(detections, homography)
         person_status, person_connections = violation_check.social_distance_check(person_data)
 
-        bird_view_image = np.zeros(shape=(700, 500, 3))
+        # Generate Motion Heatmap
+        if frame_count == 1:
+            first_frame = copy.deepcopy(frame)
+            height, width = frame.shape[:2]
+            accum_image = np.zeros((height, width), np.uint8)
+            heatmap = np.copy(frame)
+        else:
+            filter = background_subtractor.apply(frame)
+
+            _, th1 = cv2.threshold(filter, 2, 2, cv2.THRESH_BINARY)
+
+            # Create the heatmap visualizations
+            accum_image = cv2.add(accum_image, th1)
+            color_image_video = cv2.applyColorMap(accum_image, cv2.COLORMAP_HOT)
+            heatmap = cv2.addWeighted(frame, 0.7, color_image_video, 0.6, 0)
+
+        # Create all visualizations
+        bird_view_image = np.zeros(shape=(850, 450, 3))
         frame, bird_view_image = visualize.show_violations(
             frame,
             bird_view_image,
@@ -78,13 +97,15 @@ def main():
             person_status,
             person_connections)
 
-        bird_view_image = cv2.resize(bird_view_image, video_dim)
+
+        bird_view_image = cv2.resize(bird_view_image, (540, 540))
         frame = cv2.resize(frame, video_dim)
+        heatmap = cv2.resize(heatmap, video_dim)
 
         top_frame = np.concatenate((bird_view_image, frame), axis=1)
         top_frame = np.uint8(top_frame)
 
-        bottom_frame = np.concatenate((frame, bird_view_image), axis=1)
+        bottom_frame = np.concatenate((bird_view_image, heatmap), axis=1)
         bottom_frame = np.uint8(bottom_frame)
 
         output_frame = np.concatenate((top_frame, bottom_frame), axis=0)

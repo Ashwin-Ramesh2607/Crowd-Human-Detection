@@ -14,7 +14,7 @@ def draw_status(original_image, bird_view_image, person_data, person_status):
         cv2.circle(
             bird_view_image,
             (int(coords['feet_point'][0]), int(coords['feet_point'][1])),
-            5, color, -1)
+            8, color, -1)
 
         # Visualization on Video Feed
         cv2.rectangle(
@@ -40,7 +40,7 @@ def draw_connections(bird_view_image, person_data, track_connections):
             continue  # No connecting lines if they are at safe distance
         
         # Visualization on Bird View Image
-        cv2.line(bird_view_image, point1, point2, color, thickness=2)
+        cv2.line(bird_view_image, point1, point2, color, thickness=3)
 
     return bird_view_image
 
@@ -51,3 +51,4 @@ def show_violations(original_image, bird_view_image, person_data, person_status,
     bird_view_image = draw_connections(bird_view_image, dict(person_data), track_connections)
 
     return original_image, bird_view_image
+

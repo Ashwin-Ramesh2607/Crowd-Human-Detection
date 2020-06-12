@@ -43,7 +43,7 @@ def main():
     video_capture = cv2.VideoCapture(FLAGS.input_video_path)
     video_writer = cv2.VideoWriter(
         FLAGS.output_video_path,
-        cv2.VideoWriter_fourcc(*'MP4V'),
+        cv2.VideoWriter_fourcc(*'VP90'),
         video_capture.get(cv2.CAP_PROP_FPS),
         (1200, 600))
         # (int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT))))

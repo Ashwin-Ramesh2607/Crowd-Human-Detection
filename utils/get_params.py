@@ -14,7 +14,7 @@ def parse_arguments():
     parser.add_argument(
         '--output_video_path',
         type=str,
-        default='output.mp4',
+        default='output.webm',
         help='Path to the output video file')
 
     parser.add_argument(

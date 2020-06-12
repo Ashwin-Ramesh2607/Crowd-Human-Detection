@@ -5,6 +5,7 @@ import argparse
 import cv2
 import numpy as np
 
+from utils import plots
 from utils import visualize
 from utils import get_params
 from utils import projection
@@ -47,6 +48,9 @@ def main():
         cv2.VideoWriter_fourcc(*'VP90'),
         video_capture.get(cv2.CAP_PROP_FPS),
         (960 + 540, 1080))
+
+    # Instantiate a plotting object
+    realtime_plot = plots.RealTimePlots()
 
     # Initialize the Background subtractor for Motion Heatmap generation
     background_subtractor = cv2.createBackgroundSubtractorMOG2()
@@ -97,6 +101,8 @@ def main():
             person_status,
             person_connections)
 
+        realtime_plots.add_data(len(detections), 5)
+        realtime_plot = realtime_plots.retrieve_plot()
 
         bird_view_image = cv2.resize(bird_view_image, (540, 540))
         frame = cv2.resize(frame, video_dim)
@@ -105,7 +111,7 @@ def main():
         top_frame = np.concatenate((bird_view_image, frame), axis=1)
         top_frame = np.uint8(top_frame)
 
-        bottom_frame = np.concatenate((bird_view_image, heatmap), axis=1)
+        bottom_frame = np.concatenate((realtime_plot, heatmap), axis=1)
         bottom_frame = np.uint8(bottom_frame)
 
         output_frame = np.concatenate((top_frame, bottom_frame), axis=0)

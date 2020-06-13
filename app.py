@@ -47,7 +47,7 @@ def main():
         FLAGS.output_video_path,
         cv2.VideoWriter_fourcc(*'VP90'),
         video_capture.get(cv2.CAP_PROP_FPS),
-        (960 + 540, 1080))
+        (1500, 1080))
 
     # Instantiate a plotting object
     realtime_plot = plots.RealTimePlots()
@@ -101,9 +101,10 @@ def main():
             person_status,
             person_connections)
 
-        realtime_plot.add_data(len(detections), 5)
+        realtime_plot.add_data(len(detections), int(sum(status == 0 for status in person_status.values())))
         image_plot = realtime_plot.retrieve_plot()
 
+	# Create the 4-pane Video
         bird_view_image = cv2.resize(bird_view_image, (540, 540))
         frame = cv2.resize(frame, video_dim)
         heatmap = cv2.resize(heatmap, video_dim)
@@ -116,6 +117,8 @@ def main():
 
         output_frame = np.concatenate((top_frame, bottom_frame), axis=0)
         output_frame = np.uint8(output_frame)
+        cv2.line(output_frame, (540, 0), (540, 1080), (184, 55, 55), thickness=4)
+        cv2.line(output_frame, (0, 540), (1500, 540), (184, 55, 55), thickness=4)
 
         video_writer.write(output_frame)
 

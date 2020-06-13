@@ -61,7 +61,7 @@ def main():
     while True:
 
         ret, frame = video_capture.read()
-        if not ret:
+        if not ret or frame_count == 2000:
             break
 
         result = inference_detector(model, frame)[0]

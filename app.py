@@ -101,8 +101,8 @@ def main():
             person_status,
             person_connections)
 
-        realtime_plots.add_data(len(detections), 5)
-        realtime_plot = realtime_plots.retrieve_plot()
+        realtime_plot.add_data(len(detections), 5)
+        image_plot = realtime_plot.retrieve_plot()
 
         bird_view_image = cv2.resize(bird_view_image, (540, 540))
         frame = cv2.resize(frame, video_dim)
@@ -111,7 +111,7 @@ def main():
         top_frame = np.concatenate((bird_view_image, frame), axis=1)
         top_frame = np.uint8(top_frame)
 
-        bottom_frame = np.concatenate((realtime_plot, heatmap), axis=1)
+        bottom_frame = np.concatenate((image_plot, heatmap), axis=1)
         bottom_frame = np.uint8(bottom_frame)
 
         output_frame = np.concatenate((top_frame, bottom_frame), axis=0)
@@ -134,3 +134,4 @@ def main():
 if __name__ == '__main__':
     FLAGS = get_params.parse_arguments()
     main()
+

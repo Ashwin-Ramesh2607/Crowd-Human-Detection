@@ -37,4 +37,4 @@ class RealTimePlots():
         img = img.reshape(fig.canvas.get_width_height()[::-1] + (3, ))
 
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        return img.shape
+        return img
